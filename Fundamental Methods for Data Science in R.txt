@@ -1,0 +1,478 @@
+ 
+Data Science - Machine Learning  - ATKDW194 
+
+ 
+Data Science : Classification  
+CTKDW292  
+
+
+www.data.gov
+
+open.canada.ca
+
+aws.amazon.com/datasets
+
+www.google.com/publicdata/directory
+
+http://en.wikipedia.org/wiki/Wikipedia:Database_download
+
+
+
+>first_name = c("Steve", "Joe", "Frank")
+>rank = c(1,2,3)
+>bool = c(FALSE,FALSE, TRUE)
+>
+>head(trees)
+>nrow(trees)
+>ncol(trees)
+>summary(trees)
+>str(trees)
+
+
+Structure fuction in R
+----------------------
+
+data() - displays all the inbuilt data sets
+
+Summary statistics
+------------------
+
+bn = read.csv("PASTE THE URL HERE")
+
+Import JSON Data- Javascript object Notation
+------------------------------------------
+install.packages("jsonlite")
+install.packages("httr")
+library(jsonlite)
+
+
+https://maps.googleapis.com/map
+
+>jd <- jsonlite::fromJSON("PASTE THE URL HERE")
+
+>names(jd)
+>jd$results
+>jd$results$formatted_address
+>jd$results$address_components
+>jd$results$address_components[[1]]$long_name
+>jd$results$geometry
+>jd$results$geometry$location$lat
+
+[1]37.42261
+
+>jd$results$geometry$location$lng
+
+[1] -122.0841
+
+>#rjson and RJSONIO
+
+
+Foreach looping
+---------------
+
+sapply() or lapply()
+
+>install.packages("foreach")
+>library(foreach)
+
+
+>foreach(i=1:10) %do%
++	rnorm(i)
+
+
+>foreach(i=1:10) %dopar%
++	rnorm(i)
+
+Waning message:
+executing %dopar% sequentially: no parallel backend registered
+
+>install.packages("doParallel")
+library(doParallel)
+
+>foreach(i=1:10) %dopar%
++	rnorm(i)
+
+---no warning message
+
+%dopar% is the directive in the foreach package which is used to perform computations in parallel using multiple processors.
+
+
+>dim(fr) lists the number of rows and columns in a data frame
+
+
+
+
+>cl <- makeCluster(4) -- four core processor
+>registerDoParallel(cl)
+>foreach(i=1:10) %dopar%
++	rnorm(i)
+
+
+> v <- foreach(i=1:10, .combine=c) %dopar%
++ 	rnorm(i)
+>v
+
+
+>v2 <-foreach(i=1:5, .combine=rbind) %do%
++	i
+>v2
+
+>v3 <-foreach(i=1:5, .combine=cbind) %do%
++	c(i,i^2)
+>v3
+
+
+
+
+Reshaping Data
+---------------
+
+>df <-data.frame(Id=c(1,2,3), name= c("Steve", "Frank", Mary"), c(56,89,75), c(80,90,100))
+>df
+
+>colnames(df) <- c("ID", "Name","2013", "2014")
+>df
+
+>df2 <- reshape(df, varying = c("2013", "2014"), v.names = "Percent", timevar = "Year", times = c("2013", "2014"), new.row.names = 1:6, direction = "long")
+
+>df2
+
+
+		OR
+
+
+>install.packages("reshape")
+>library(reshape)
+
+>df3 <- melt(df,id= c("ID","Name"))
+>df3
+
+
+
+Merging Data 
+------------
+
+>fr1 <- data.frame(name= c("Steve", "Joe", "Frank"), ID = c(1,2,3))
+
+>fr1 <- data.frame(ID = c(1,2,3), country = c("US", "Canada", "Mexico"))
+
+>fr1
+>fr2
+
+>mrg <- merge(fr1,fr2,by="ID")
+mrg
+
+
+Transposing Data
+-----------------
+
+
+>carmpg <- mtcars[order(-mtcars$mpg),]
+>carmpg <- carmpg[1:10, c(1,2,4,6)]
+>carmpg
+>carmpg <- data.frame(t(carmpg))-----> transposing rows to col or vice versa
+
+>carmpg$Toyota.Corolla
+
+
+
+Aggregating Data
+-----------------
+
+>ag <- aggreagate(mtcars$mpg, list(mtcars$cyl), mean)
+>ag
+
+>ag <- aggreagate(mtcars$mpg, list(mtcars$hp), mean)
+
+> bn = read.csv("PASTE THE URL HERE")
+
+>summary(bn)
+
+
+Basic imputation
+----------------
+
+Replacing NA values 
+
+>?airquality
+
+>aq2 <- na.omit(airquality)
+
+>complete.cases(airquality) ---returns bool value of the presence of NA values
+
+>airquality[complete.cases(airquality[,c(1,3,4,5,6)]),]
+
+>
+
+
+Linear Fitted Imputation
+------------------------
+
+>install.packages("Hmisc")
+>library(Hmisc)
+
+>?aregImpute
+
+> r <- aregImpute(~Ozone+ Solar.R + Wind + Temp + Month + Day, data = airquality, match = 'closest', type = 'pmm', boot.method = 'simple') ----default is five values 
+
+> r <- aregImpute(~Ozone+ Solar.R + Wind + Temp + Month + Day, data = airquality, match = 'closest', type = 'pmm', boot.method = 'simple', n.impute = 10)
+
+
+Categorize Continuous variables 
+-------------------------------
+
+> cut(a,breaks= c(0,2,4))
+
+> cut(a,breaks= c(0,2,4), right = FALSE)
+
+> cut(a,breaks= c(0,2,4), right = FALSE, labels = c("lower", "upper"))
+
+> cut(a,breaks= c(0,2,4), labels = c("lower", "upper"))
+
+> cut(airquality$Temp, breaks = c(0,80,100,150), labels = c("cold", "nice", "hot"))
+
+
+Modeling for Data Science
+---------------------------
+
+Common R modelling functions 
+
+- lm - Simple linear model
+- glm - generalised linear model
+- aov - anova or analysis of variance model
+
+
+Helper functions
+
+- coef
+- residual
+- fitted
+- confint
+
+More functions
+
+- t.test 
+- TukeyHSD
+- predict
+
+Linear Modeling 
+---------------
+
+>lm1 <- lm(trees$Volume ~ trees$Height + trees$Girth)
+
+> plot(lml)
+
+>lm2 <- lm(mpg ~ cyl + disp + hp +wt , data= mtcars)
+
+>summary(lm2)
+>plot(lm2)
+
+
+
+Analysis of Variance
+---------------------
+
+>morley
+>boxplot(Speed ~ Expt, data = morley)
+>a <- aov(Speed ~ Expt, data = morely)
+>summary(a)
+
+>qqnorm(residuals(a))
+>qqline(residuals(a))
+>plot(fitted(a), residuals(a))
+>abline(h=0)
+
+
+
+
+The R coef Function 
+--------------------
+
+>lv <- log(tress$Volume)
+> lg <- log(trees$Girth)
+> lmf <- lm(lv ~ lg + trees$Height)
+> summary(lmf)
+
+> x <- coef(lmf)
+> x
+
+
+The R Fitted Function 
+----------------------
+
+>?mtcars 
+> lmf <- lm(mpg ~ disp, data = mtcars)
+> fitted(lmf)
+> plot(fitted(lmf), residuals(lmf))
+>abline(h=0)
+
+
+
+The R residuals Function
+-------------------------
+
+>?mtcars
+>lmf <- lm(mtcars$mpg ~ mtcars$disp)
+> residuals(lmf)
+> summary()
+>summary(residuals(lmf))
+>plot(fitted(lmf), residuals(lmf))
+>abline(h=0)
+>hist(residuals(lmf))
+>qqnorm(residuals(lmf))
+>
+
+The Variance - Covariance (VCOV) MAtrix
+---------------------------------------
+>?trees
+>lmf <- lm(trees$Volume ~ trees$Girth + trees$Height)
+
+>vcov(lmf)
+
+
+
+
+Confidence Intervals
+---------------------
+>?faithful
+>plot(faithful$eruptions, faithful$waiting)
+>lme <- lm(eruptions ~ waiting, data = faithful)
+>summary(lme)
+
+>ci <- confint(lme, level = 0.95)
+>ci
+
+>lowest_est = ci[1] + ci[2]*50
+>upper_est = ci[3] + ci[4] *50
+>lower_est
+
+>upper_est
+
+Fitting Generalized Linear Models
+----------------------------------
+
+> ?mtcars
+> m <- gml(cyl ~ disp + hp, data = mtcars, family = poisson)
+
+> params <- data.frame(hp=110, disp = 160)
+>predict(m, params, type = "response")
+
+> params <- data.frame(hp=180, disp = 350)
+>predict(m, params, type = "response")
+
+
+Plotting Linear Models
+----------------------
+
+> ?faithful 
+> plot(faithful$eruptions, faithful$waiting)
+> library(ggplot2)
+> qplot(eruptions, waiting, data=faithful)
+
+> qplot(eruptions, waiting, data=faithful, color = waiting, size= eruptions) ---size increases with more eruption
+
+> qplot(eruptions, waiting, data=faithful, color = waiting, size= eruptions, geom = c("point", "smooth"))
+
+> qplot(eruptions, waiting, data=faithful, color = waiting, size= eruptions, geom = c("point", "smooth"), method = "lm")
+
+> qplot(eruptions, waiting, data=faithful, color = waiting, size= eruptions, geom = c("point", "smooth"), method = "lm") + coord_flip()
+
+
+
+T-Test
+-------
+
+>r <- rnorm(100,1000,100)
+> summary(r)
+
+>tt <- t.test(r, mu=1000)
+>str(tt)
+
+>tt
+
+>tt2 <- t.test(r, mu = 1000, alternative = "greater")
+
+>tt2
+
+
+
+The TukeyHSD Test
+------------------
+
+> ?morley
+> table(morley$Expt)
+
+> a <- aov(Speed ~ factor(Expt), data = morley)
+
+>summary (a)
+
+>TukeyHSD(a)
+
+>boxplot(Speed ~ Expt, data= morley)
+>plot(TukeyHSD(a))
+
+
+The Predict Function 
+---------------------
+
+> ?faithful
+> plot(eruptions ~ waiting, data=faithful)
+
+>lme <- lm(eruptions ~ waiting, data=faithful)
+
+>dfe <- data.frame(waiting = 50)
+> summary(lme)
+
+> predict(lme, dfe, interval ="predict", level = 0.95)
+
+
+
+Time Series
+--------------
+--------------
+
+>tsdata <- ts(sample(1:100, 24),start = c(2013,1), end = c(2014,12), frequency = 12)
+>str(tsdata)
+
+>plot(tsdata)
+>tsdata <- ts(sample(1:100, 24), start = c(2013, 1), end = c(2014, 12), deltat = 1/12)
+>plot(tsdata)
+
+>?AirPassengers
+>str(AirPassengers)
+
+>AirPassengers
+
+
+
+The R Forecast package
+_______________________
+
+
+>str(AirPassengers)
+
+>AirPassengers
+
+>f <- stl(AirPassengers, s.window = "period")
+>plot(f)
+
+>install.packages("forecast")
+
+>library(forecast)
+
+>?ets
+
+> f <- ets(AirPassengers)
+> plot(forecast(f,12))
+
+>??auto.arima
+> f <- auto.arima(AirPassengers)
+> plot(forecast(f,12))
+
+
+Exercise: Using R for Data Science
+___________________________________
+
+
+
+
